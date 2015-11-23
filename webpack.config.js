@@ -1,5 +1,7 @@
 var path = require('path');
 
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
+
 var autoprefixerOptions = {
   browsers: [
     'last 2 versions',
@@ -21,9 +23,8 @@ module.exports = {
     path.join(__dirname, 'www', 'app', 'app.js')
   ],
   output: {
-    path: path.join(__dirname, 'www', 'build', 'js'),
-    filename: 'app.bundle.js',
-    publicPath: 'build/js/'
+    path: path.join(__dirname, 'www', 'build'),
+    filename: 'js/app.bundle.js',
     //pathinfo: true // show module paths in the bundle, handy for debugging
   },
   module: {
@@ -42,7 +43,7 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loaders: ["style", "css", "autoprefixer?" + JSON.stringify(autoprefixerOptions), "sass"]
+        loader: ExtractTextPlugin.extract("style", ["css", "autoprefixer?" + JSON.stringify(autoprefixerOptions), "sass"])
       },
       // Any png-image or woff-font below or equal to 100K will be converted
       // to inline base64 instead
@@ -58,6 +59,10 @@ module.exports = {
     ],
     extensions: ["", ".js", ".ts"]
   },
+  plugins: [
+    // pulls out all Sass dependencies into one app.css file
+    new ExtractTextPlugin("css/app.css")
+  ],
   // Sass loader configuration to tell webpack where to find the additional SASS files
   // it needs for `ionic`, located in the ionic-framework node module folder.
   // https://github.com/jtangelder/sass-loader#sass-options
